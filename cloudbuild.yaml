@@ -2,35 +2,24 @@ steps:
   # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', '${_IMAGE_URL}:${_IMAGE_TAG}', '.']
-  
+
   # Step 2: Push the Docker image to GCR
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_IMAGE_URL}:${_IMAGE_TAG}']
-  
-  # Step 3: Pull the Trivy image
-  - name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        docker pull aquasec/trivy:latest
 
-  # Step 4: Scan the container image with Trivy
-  - name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image ${_IMAGE_URL}:${_IMAGE_TAG}
+  # Step 3: Scan the container image with Trivy and save the report
+  - name: 'aquasec/trivy'
+    args: ['image', '--format', 'json', '--output', '/workspace/trivy-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
+    id: 'trivy-scan'
 
-  # Step 5: Save the Trivy report to a GCS bucket
+  # Step 4: Upload the Trivy report to Cloud Storage
   - name: 'gcr.io/cloud-builders/gsutil'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --format json --output trivy-report.json ${_IMAGE_URL}:${_IMAGE_TAG}
-        gsutil cp trivy-report.json gs://pipeline-github/trivy-report.json
+    args: ['cp', '/workspace/trivy-report.json', 'gs://pipeline-github/trivy-report.json']
+    waitFor: ['trivy-scan']
+
+  # Step 5: Check the vulnerabilities
+  - name: 'aquasec/trivy'
+    args: ['image', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
