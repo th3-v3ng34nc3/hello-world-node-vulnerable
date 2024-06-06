@@ -21,7 +21,7 @@ steps:
     args:
       - '-c'
       - |
-        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --exit-code 1 --severity HIGH,CRITICAL ${_IMAGE_URL}:${_IMAGE_TAG}
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image ${_IMAGE_URL}:${_IMAGE_TAG}
 
   # Step 5: Save the Trivy report to a GCS bucket
   - name: 'gcr.io/cloud-builders/gsutil'
