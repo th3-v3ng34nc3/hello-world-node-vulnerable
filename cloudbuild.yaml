@@ -6,4 +6,7 @@ steps:
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
   _IMAGE_TAG: 'latest'
+images: [
+   'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
+  ]
 logsBucket: 'gs://pipeline-github'
