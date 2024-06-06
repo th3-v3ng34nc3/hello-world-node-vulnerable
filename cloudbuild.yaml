@@ -1,12 +1,43 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', '${_IMAGE_URL}:${_IMAGE_TAG}', '.']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/${_IMAGE_URL}:${_IMAGE_TAG}']
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_IMAGE_URL}:${_IMAGE_TAG}', '.']
+  
+  # Step 2: Push the Docker image to GCR
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_IMAGE_URL}:${_IMAGE_TAG}']
+  
+  # Step 3: Pull the Trivy image
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker pull aquasec/trivy:latest
+
+  # Step 4: Scan the container image with Trivy
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --exit-code 1 --severity HIGH,CRITICAL ${_IMAGE_URL}:${_IMAGE_TAG}
+
+  # Step 5: Save the Trivy report to a GCS bucket
+  - name: 'gcr.io/cloud-builders/gsutil'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --format json --output trivy-report.json ${_IMAGE_URL}:${_IMAGE_TAG}
+        gsutil cp trivy-report.json gs://pipeline-github/trivy-report.json
+
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
   _IMAGE_TAG: 'latest'
-images: [
-   'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
-  ]
+
+images:
+  - 'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
+
 logsBucket: 'gs://pipeline-github'
+timeout: '1200s'
