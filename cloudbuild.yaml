@@ -1,0 +1,9 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', '${_IMAGE_URL}:${_IMAGE_TAG}', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/${_IMAGE_URL}:${_IMAGE_TAG}']
+substitutions:
+  _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
+  _IMAGE_TAG: 'latest'
+logsBucket: 'gs://pipeline-github'
