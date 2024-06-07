@@ -28,7 +28,7 @@ steps:
     args:
       [
         '-c',
-        'curl --location --request POST 'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false' --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMzU3MDM0LCJqdGkiOiIzNjgyNGM5ZGJmZTI0NTdhYmUzMzFkZTcyMmQwN2JiMyIsImlzcyI6ImNzcG0uc3RhZ2UuYWNjdWtub3guY29tIn0.CqIe86mTRCNjP_A3h-XxbX_dIHk7mha0cKp7TrOcMv6KWBIZCYJaqYUY7KJWWXA0WGln2dPU2KXQVSlUQOxQLpDaN7MAsQtOl7U5KhuESc4szvTOEOlqj_1LKSHhaINeYlWtX3IMI0UZXdvPLgWU1MnMOeSpv22oLJZvFlymeBlyWeJT8_Lv0eNBhieh2I_d-8wfr1aFudGV1mlezLAOPC_zDvlGEBIo06m3kCITvsQlRStEWLkSo5v8iZW7YEbJmiDdeehipvtV4-rv_M3OnzQQV9mr-B5NozH94x3Gu0XtExWfCYw-drVd9Eh-jnaLJpJh4Klvjwq17_vM_l7mqw' --form 'file=@"./results.json"'
+        'curl --location --request POST 'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false' --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMzU3MDM0LCJqdGkiOiIzNjgyNGM5ZGJmZTI0NTdhYmUzMzFkZTcyMmQwN2JiMyIsImlzcyI6ImNzcG0uc3RhZ2UuYWNjdWtub3guY29tIn0.CqIe86mTRCNjP_A3h-XxbX_dIHk7mha0cKp7TrOcMv6KWBIZCYJaqYUY7KJWWXA0WGln2dPU2KXQVSlUQOxQLpDaN7MAsQtOl7U5KhuESc4szvTOEOlqj_1LKSHhaINeYlWtX3IMI0UZXdvPLgWU1MnMOeSpv22oLJZvFlymeBlyWeJT8_Lv0eNBhieh2I_d-8wfr1aFudGV1mlezLAOPC_zDvlGEBIo06m3kCITvsQlRStEWLkSo5v8iZW7YEbJmiDdeehipvtV4-rv_M3OnzQQV9mr-B5NozH94x3Gu0XtExWfCYw-drVd9Eh-jnaLJpJh4Klvjwq17_vM_l7mqw' --form 'file=@"./results.json"''
       ]
 
 substitutions:
