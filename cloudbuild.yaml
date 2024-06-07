@@ -42,3 +42,4 @@ images:
 
 logsBucket: 'gs://pipeline-github'
 timeout: '1200s'
+#magic
