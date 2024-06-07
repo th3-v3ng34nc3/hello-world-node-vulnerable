@@ -28,8 +28,9 @@ steps:
     args:
       [
         '-c',
-        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer $(cat /secrets/AK-Token)" --form "file=@/workspace/trivy-report.json"'
+        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer $CSPM_TOKEN" --form "file=@/workspace/trivy-report.json"'
       ]
+    secretEnv: ['CSPM_TOKEN']
 
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
@@ -46,4 +47,4 @@ timeout: '1200s'
 availableSecrets:
   secretManager:
     - versionName: projects/995466864401/secrets/AK-Token/versions/latest
-      mountPath: /secrets
+      env: 'CSPM_TOKEN'
