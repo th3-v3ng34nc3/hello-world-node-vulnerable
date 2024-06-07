@@ -13,7 +13,7 @@ steps:
     args:
       - '-c'
       - |
-        apt-get update && apt-get install -y wget
+        apt-get update && apt-get install -y wget curl
         wget https://github.com/aquasecurity/trivy/releases/download/v0.38.2/trivy_0.38.2_Linux-64bit.deb
         dpkg -i trivy_0.38.2_Linux-64bit.deb
         trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_URL}:${_IMAGE_TAG}
