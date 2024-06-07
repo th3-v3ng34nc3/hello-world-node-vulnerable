@@ -24,14 +24,11 @@ steps:
 
   # Step 6: Forward the logs to the SaaS platform using curl
   - name: 'gcr.io/cloud-builders/curl'
-    secretEnv: ['CSPM_TOKEN']
+    entrypoint: 'bash'
     args:
       [
-        '--location',
-        '--request', 'POST',
-        'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false',
-        '--header', 'Authorization: Bearer $CSPM_TOKEN',
-        '--form', 'file=@/workspace/trivy-report.json'
+        '-c',
+        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer $(cat /secrets/AK-Token)" --form "file=@/workspace/trivy-report.json"'
       ]
 
 substitutions:
@@ -49,4 +46,4 @@ timeout: '1200s'
 availableSecrets:
   secretManager:
     - versionName: projects/995466864401/secrets/AK-Token/versions/latest
-      env: 'CSPM_TOKEN'
+      mountPath: /secrets
