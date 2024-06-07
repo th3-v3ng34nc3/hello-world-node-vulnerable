@@ -12,12 +12,32 @@ steps:
     args: ['image', '--format', 'json', '--output', '/workspace/trivy-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
     id: 'trivy-scan'
 
-  # Step 4: Upload the Trivy report to Cloud Storage
+  # Step 4: Print Trivy Results
+  - name: 'gcr.io/cloud-builders/curl'
+    entrypoint: 'cat'
+    args: ['/workspace/trivy-report.json']
+    waitFor: ['trivy-scan']
+
+  # Step 5: Push report to CSPM panel
+  - name: 'gcr.io/cloud-builders/curl'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        curl --location --request POST 'https://${CSPM_URL}/api/v1/artifact/?tenant_id=${TENANT_ID}&data_type=TR&save_to_s3=false' \
+        --header 'Authorization: Bearer ${CSPM_TOKEN}' \
+        --form 'file=@/workspace/trivy-report.json'
+    env:
+      - 'CSPM_URL=cspm.demo.accuknox.com'
+      - 'CSPM_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMzMwODYzLCJqdGkiOiJkZTg5MjNlYjQ0Nzk0OTk0ODVjMDQyZjUwMzVjMmFkYyIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.Bax6Ygm894vFuzdkaBpKB5APTPmBAxDsmXSeYY6wvLAA_Ot76CO7J53_Fifb4jUu7KYmNfc-51Bci2R-SGSUI42f-rqRuPxMHBP93RyJH7WshXYfYA1Yuel0nKEC4beC8imunVpUQ_8dULrlAY4Vfp0-5TkPfCjNurFyWpPTt_ezR-rY0gQEe6EjZoi4mUAOEFXpeMDu8EucaOo88tBtjmFNnIxSJjwBnUcQBzcRpxBtQkzJF410Q8X89pLCJz2z-PLK28oBnLvtn6poU1XgTERoKtAvOoNHgRAd4bgv-xkCOLhh-ejmTtxY2DPBqR0W4wYaENB2XGxz4Tp69WX-Jw'
+      - 'TENANT_ID=167'
+
+  # Step 6: Upload the Trivy report to Cloud Storage
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', '/workspace/trivy-report.json', 'gs://pipeline-github/trivy-report.json']
     waitFor: ['trivy-scan']
 
-  # Step 5: Check the vulnerabilities
+  # Step 7: Check the vulnerabilities
   - name: 'aquasec/trivy'
     args: ['image', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
