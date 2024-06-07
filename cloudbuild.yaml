@@ -7,24 +7,26 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
-  # Step 3: Scan the container image with Trivy and save the report
-  - name: 'gcr.io/cloud-builders/docker'
+  # Step 3: Download Trivy standalone binary and scan the container image
+  - name: 'ubuntu'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
-        docker pull aquasec/trivy:latest
-        docker run --rm -v /workspace:/workspace aquasec/trivy:latest image --format json --output /workspace/trivy-report.json ${_IMAGE_URL}:${_IMAGE_TAG}
+        apt-get update && apt-get install -y wget
+        wget https://github.com/aquasecurity/trivy/releases/download/v0.38.2/trivy_0.38.2_Linux-64bit.deb
+        dpkg -i trivy_0.38.2_Linux-64bit.deb
+        trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_URL}:${_IMAGE_TAG}
     id: 'trivy-scan'
 
   # Step 4: Print Trivy Results
-  - name: 'gcr.io/cloud-builders/curl'
+  - name: 'ubuntu'
     entrypoint: 'cat'
     args: ['/workspace/trivy-report.json']
     waitFor: ['trivy-scan']
 
   # Step 5: Push report to CSPM panel
-  - name: 'gcr.io/cloud-builders/curl'
+  - name: 'ubuntu'
     entrypoint: 'sh'
     args:
       - '-c'
@@ -38,8 +40,14 @@ steps:
     waitFor: ['trivy-scan']
 
   # Step 7: Check the vulnerabilities
-  - name: 'aquasec/trivy'
-    args: ['image', '${_IMAGE_URL}:${_IMAGE_TAG}']
+  - name: 'ubuntu'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        wget https://github.com/aquasecurity/trivy/releases/download/v0.38.2/trivy_0.38.2_Linux-64bit.deb
+        dpkg -i trivy_0.38.2_Linux-64bit.deb
+        trivy image ${_IMAGE_URL}:${_IMAGE_TAG}
 
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
