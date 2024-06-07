@@ -35,7 +35,7 @@ steps:
 
   # Step 7: Check the vulnerabilities and fail the build if high or critical vulnerabilities are found
   - name: 'aquasec/trivy'
-    args: ['image','${_IMAGE_URL}:${_IMAGE_TAG}']
+    args: ['image', '--exit-code', '1', '--severity', 'HIGH,CRITICAL', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
