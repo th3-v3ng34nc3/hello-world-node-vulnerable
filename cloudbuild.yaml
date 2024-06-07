@@ -30,7 +30,7 @@ steps:
         '--location',
         '--request', 'POST',
         'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false',
-        '--header', 'Authorization: Bearer ${CSPM_TOKEN}',
+        '--header', 'Authorization: Bearer $CSPM_TOKEN',
         '--form', 'file=@/workspace/trivy-report.json'
       ]
 
