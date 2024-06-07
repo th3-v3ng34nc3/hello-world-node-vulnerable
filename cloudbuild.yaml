@@ -24,15 +24,12 @@ steps:
 
   # Step 6: Forward the logs to the SaaS platform using curl
   - name: 'gcr.io/cloud-builders/curl'
-    env:
-      - 'CSPM_URL=${_CSPM_URL}'
-      - 'TENANT_ID=${_TENANT_ID}'
     secretEnv: ['CSPM_TOKEN']
     args:
       [
         '--location',
         '--request', 'POST',
-        'https://${CSPM_URL}/api/v1/artifact/?tenant_id=${TENANT_ID}&data_type=TR&save_to_s3=false',
+        'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false',
         '--header', 'Authorization: Bearer ${CSPM_TOKEN}',
         '--form', 'file=@/workspace/trivy-report.json'
       ]
