@@ -28,7 +28,7 @@ steps:
     args:
       [
         '-c',
-        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer ${_CSPM_TOKEN}"' --form "file=@'./trivy-report.json'"
+        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer ${_CSPM_TOKEN}" --form "file=@/workspace/trivy-report.json"'
       ]
 
 substitutions:
