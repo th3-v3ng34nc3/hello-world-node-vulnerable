@@ -24,12 +24,16 @@ steps:
 
   # Step 6: Forward the logs to the SaaS platform using curl
   - name: 'gcr.io/cloud-builders/curl'
+    env:
+      - 'CSPM_URL=${_CSPM_URL}'
+      - 'TENANT_ID=${_TENANT_ID}'
+    secretEnv: ['CSPM_TOKEN']
     args:
       [
         '--location',
         '--request', 'POST',
-        'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false',
-        '--header', 'Authorization: Bearer ${_CSPM_TOKEN}',
+        'https://${CSPM_URL}/api/v1/artifact/?tenant_id=${TENANT_ID}&data_type=TR&save_to_s3=false',
+        '--header', 'Authorization: Bearer ${CSPM_TOKEN}',
         '--form', 'file=@/workspace/trivy-report.json'
       ]
 
@@ -37,7 +41,6 @@ substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
   _IMAGE_TAG: 'latest'
   _CSPM_URL: 'cspm.demo.accuknox.com'
-  _CSPM_TOKEN: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzNjczOTYyLCJqdGkiOiIzOTUzYWM0YWE4YmQ0ZDdkYTRkZmQ0MDdjNGIyZTk4ZSIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.aFOxNA8_CF9PSj3XSN0Vsmq1h8LtseNQbMaCVP1EZhHMSkKMb814WujBQj3ViABXrpuPi4g935Ob1hRTf2XELENmN5WzWvthhy8VfFVrWfCqsjOWWs5HIPSF9s65neGkwEZghmU5kjt7C5WS1TIv8p2Z0Z0SZjSGVrCzNAy0Iwf2AUPinY2cWamVPQrdjTq2QOusJJX8g8IOdwLm9GnIjks78G_bAxmMfqs6i57Iw8yWvMXCzFkfpqkfaml8hM-YPm-4wz5toTXfyo8McNaNhfWKF6U-RyVpX1XtsudVugoY3vB9reJabr8mLPoGLLYo-6ad3OMdYBiQQ8Af6tu52Q'
   _TENANT_ID: '167'
 
 images:
@@ -45,3 +48,8 @@ images:
 
 logsBucket: 'gs://pipeline-github'
 timeout: '1200s'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/995466864401/secrets/AK-Token/versions/latest
+      env: 'CSPM_TOKEN'
