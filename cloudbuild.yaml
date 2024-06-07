@@ -28,14 +28,14 @@ steps:
     args:
       [
         '-c',
-        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzNjczOTYyLCJqdGkiOiIzOTUzYWM0YWE4YmQ0ZDdkYTRkZmQ0MDdjNGIyZTk4ZSIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.aFOxNA8_CF9PSj3XSN0Vsmq1h8LtseNQbMaCVP1EZhHMSkKMb814WujBQj3ViABXrpuPi4g935Ob1hRTf2XELENmN5WzWvthhy8VfFVrWfCqsjOWWs5HIPSF9s65neGkwEZghmU5kjt7C5WS1TIv8p2Z0Z0SZjSGVrCzNAy0Iwf2AUPinY2cWamVPQrdjTq2QOusJJX8g8IOdwLm9GnIjks78G_bAxmMfqs6i57Iw8yWvMXCzFkfpqkfaml8hM-YPm-4wz5toTXfyo8McNaNhfWKF6U-RyVpX1XtsudVugoY3vB9reJabr8mLPoGLLYo-6ad3OMdYBiQQ8Af6tu52Q"'
+        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false" --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwMzU3MDM0LCJqdGkiOiIzNjgyNGM5ZGJmZTI0NTdhYmUzMzFkZTcyMmQwN2JiMyIsImlzcyI6ImNzcG0uc3RhZ2UuYWNjdWtub3guY29tIn0.CqIe86mTRCNjP_A3h-XxbX_dIHk7mha0cKp7TrOcMv6KWBIZCYJaqYUY7KJWWXA0WGln2dPU2KXQVSlUQOxQLpDaN7MAsQtOl7U5KhuESc4szvTOEOlqj_1LKSHhaINeYlWtX3IMI0UZXdvPLgWU1MnMOeSpv22oLJZvFlymeBlyWeJT8_Lv0eNBhieh2I_d-8wfr1aFudGV1mlezLAOPC_zDvlGEBIo06m3kCITvsQlRStEWLkSo5v8iZW7YEbJmiDdeehipvtV4-rv_M3OnzQQV9mr-B5NozH94x3Gu0XtExWfCYw-drVd9Eh-jnaLJpJh4Klvjwq17_vM_l7mqw"'
       ]
 
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
   _IMAGE_TAG: 'latest'
   _CSPM_URL: 'cspm.demo.accuknox.com'
-  _TENANT_ID: '167'
+  _TENANT_ID: '65'
 
 images:
   - 'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
