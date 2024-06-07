@@ -7,32 +7,42 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
-  # Step 3: Download Trivy standalone binary and scan the container image
+  # Step 3: Scan the container image with Trivy and save the report
   - name: 'aquasec/trivy'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        trivy image --format json --output /workspace/trivy-report.json ${_IMAGE_URL}:${_IMAGE_TAG}
+    args: ['image', '--format', 'json', '--output', '/workspace/trivy-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
     id: 'trivy-scan'
 
-  # Step 4: Print Trivy Results
+  # Step 4: Upload the Trivy report to Cloud Storage
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', '/workspace/trivy-report.json', 'gs://pipeline-github/trivy-report.json']
     waitFor: ['trivy-scan']
 
-  # Step 5: Push report to CSPM panel
+  # Step 5: Print the Trivy results
+  - name: 'ubuntu'
+    entrypoint: 'cat'
+    args: ['/workspace/trivy-report.json']
+
+  # Step 6: Forward the logs to the SaaS platform using curl
   - name: 'gcr.io/cloud-builders/curl'
-    entrypoint: 'sh'
     args:
-      - '-c'
-      - |
-        curl --location --request POST 'https://cspm.demo.accuknox.com/api/v1/artifact/?tenant_id=167&data_type=TR&save_to_s3=false' --header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzNjczOTYyLCJqdGkiOiIzOTUzYWM0YWE4YmQ0ZDdkYTRkZmQ0MDdjNGIyZTk4ZSIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.aFOxNA8_CF9PSj3XSN0Vsmq1h8LtseNQbMaCVP1EZhHMSkKMb814WujBQj3ViABXrpuPi4g935Ob1hRTf2XELENmN5WzWvthhy8VfFVrWfCqsjOWWs5HIPSF9s65neGkwEZghmU5kjt7C5WS1TIv8p2Z0Z0SZjSGVrCzNAy0Iwf2AUPinY2cWamVPQrdjTq2QOusJJX8g8IOdwLm9GnIjks78G_bAxmMfqs6i57Iw8yWvMXCzFkfpqkfaml8hM-YPm-4wz5toTXfyo8McNaNhfWKF6U-RyVpX1XtsudVugoY3vB9reJabr8mLPoGLLYo-6ad3OMdYBiQQ8Af6tu52Q' --form 'file=@"./trivy-report.json"'
-    waitFor: ['trivy-scan']
+      [
+        '--location',
+        '--request', 'POST',
+        'https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false',
+        '--header', 'Authorization: Bearer ${_CSPM_TOKEN}',
+        '--form', 'file=@/workspace/trivy-report.json'
+      ]
+
+  # Step 7: Check the vulnerabilities and fail the build if high or critical vulnerabilities are found
+  - name: 'aquasec/trivy'
+    args: ['image', '--exit-code', '1', '--severity', 'HIGH,CRITICAL', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
 substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
   _IMAGE_TAG: 'latest'
+  _CSPM_URL: 'cspm.demo.accuknox.com'
+  _CSPM_TOKEN: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzNjczOTYyLCJqdGkiOiIzOTUzYWM0YWE4YmQ0ZDdkYTRkZmQ0MDdjNGIyZTk4ZSIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.aFOxNA8_CF9PSj3XSN0Vsmq1h8LtseNQbMaCVP1EZhHMSkKMb814WujBQj3ViABXrpuPi4g935Ob1hRTf2XELENmN5WzWvthhy8VfFVrWfCqsjOWWs5HIPSF9s65neGkwEZghmU5kjt7C5WS1TIv8p2Z0Z0SZjSGVrCzNAy0Iwf2AUPinY2cWamVPQrdjTq2QOusJJX8g8IOdwLm9GnIjks78G_bAxmMfqs6i57Iw8yWvMXCzFkfpqkfaml8hM-YPm-4wz5toTXfyo8McNaNhfWKF6U-RyVpX1XtsudVugoY3vB9reJabr8mLPoGLLYo-6ad3OMdYBiQQ8Af6tu52Q'
+  _TENANT_ID: '167'
 
 images:
   - 'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
