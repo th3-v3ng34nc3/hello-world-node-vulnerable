@@ -9,7 +9,7 @@ steps:
 
   # Step 3: Scan the container image with Trivy and save the report
   - name: 'accuknox/accuknox-container-scan'
-    args: ['image', '--format', 'json', '--output', '/workspace/trivy-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
+    args: ['image', '--format', 'json', '--output', '/workspace/accuknox-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
     id: 'accuknox-container-scan'
 
   # Step 4: Upload the Trivy report to Cloud Storage
