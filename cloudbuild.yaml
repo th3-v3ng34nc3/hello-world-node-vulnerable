@@ -8,19 +8,19 @@ steps:
     args: ['push', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
   # Step 3: Scan the container image with Trivy and save the report
-  - name: 'aquasec/trivy'
+  - name: 'accuknox/accuknox-container-scan'
     args: ['image', '--format', 'json', '--output', '/workspace/trivy-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
-    id: 'trivy-scan'
+    id: 'accuknox-container-scan'
 
   # Step 4: Upload the Trivy report to Cloud Storage
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', '/workspace/trivy-report.json', 'gs://pipeline-github/trivy-report.json']
-    waitFor: ['trivy-scan']
+    args: ['cp', '/workspace/accuknox-report.json', 'gs://pipeline-github/accuknox-report.json']
+    waitFor: ['accuknox-container-scan']
 
   # Step 5: Print the Trivy results
   - name: 'ubuntu'
     entrypoint: 'cat'
-    args: ['/workspace/trivy-report.json']
+    args: ['/workspace/accuknox-report.json']
 
   # Step 6: Forward the logs to the SaaS platform using curl
   - name: 'gcr.io/cloud-builders/curl'
@@ -28,7 +28,7 @@ steps:
     args:
       [
         '-c',
-        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false"  --header "Tenant-Id: 167" --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwNTg0NDgxLCJqdGkiOiJlOTMzZjBiMjRmOTE0ZDEwOGYzY2RlZGI4MGNmMGFmZCIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.aZW3andqtR8-mW_CgdzPDUu-Vow2whoOUjpyGxnfUVcfRfiJpkIlATlFDmPhOR3PHc6tJuxxfZBcyxiX4pXcFBMEAtFMUMK3bIA3oOftALuCxLW5W4DS6PzeOXjNZn9_ijadh8d6UJvw4JOAByXRcwu9XNSwICn-pb4BqfIvu7tL_sHRWMFKt4C5Mo97FNr48keXzOeWzy4TiqMCwTKBzwtJbBt3NrgvWoTZzpJx1ioWGnVcQRHphDL0xA6OmyZYw5qOEJ5y8yv5rDt0p5JUWD5EiemF8Pq-0_OXBZ0TU-a-4deBWMnwSqO-i2C7cxzA_d0hC1fRcVhJ7PFnALFXcA" --form "file=@/workspace/trivy-report.json"'
+        'curl --location --request POST "https://${_CSPM_URL}/api/v1/artifact/?tenant_id=${_TENANT_ID}&data_type=TR&save_to_s3=false"  --header "Tenant-Id: 167" --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwNTg0NDgxLCJqdGkiOiJlOTMzZjBiMjRmOTE0ZDEwOGYzY2RlZGI4MGNmMGFmZCIsImlzcyI6ImNzcG0uZGVtby5hY2N1a25veC5jb20ifQ.aZW3andqtR8-mW_CgdzPDUu-Vow2whoOUjpyGxnfUVcfRfiJpkIlATlFDmPhOR3PHc6tJuxxfZBcyxiX4pXcFBMEAtFMUMK3bIA3oOftALuCxLW5W4DS6PzeOXjNZn9_ijadh8d6UJvw4JOAByXRcwu9XNSwICn-pb4BqfIvu7tL_sHRWMFKt4C5Mo97FNr48keXzOeWzy4TiqMCwTKBzwtJbBt3NrgvWoTZzpJx1ioWGnVcQRHphDL0xA6OmyZYw5qOEJ5y8yv5rDt0p5JUWD5EiemF8Pq-0_OXBZ0TU-a-4deBWMnwSqO-i2C7cxzA_d0hC1fRcVhJ7PFnALFXcA" --form "file=@/workspace/accuknox-report.json"'
       ]
 
 substitutions:
