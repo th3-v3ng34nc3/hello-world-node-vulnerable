@@ -35,7 +35,7 @@ substitutions:
   _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
   _IMAGE_TAG: 'latest'
   _CSPM_URL: 'cspm.demo.accuknox.com'
-  _TENANT_ID: '65'
+  _TENANT_ID: '167'
 
 images:
   - 'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
