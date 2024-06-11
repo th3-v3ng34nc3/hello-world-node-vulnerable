@@ -7,17 +7,17 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_IMAGE_URL}:${_IMAGE_TAG}']
 
-  # Step 3: Scan the container image with Trivy and save the report
+  # Step 3: Scan the container image with AccuKnox and save the report
   - name: 'accuknox/accuknox-container-scan'
     args: ['image', '--format', 'json', '--output', '/workspace/accuknox-report.json', '${_IMAGE_URL}:${_IMAGE_TAG}']
     id: 'accuknox-container-scan'
 
-  # Step 4: Upload the Trivy report to Cloud Storage
+  # Step 4: Upload the AccuKnox report to Cloud Storage
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', '/workspace/accuknox-report.json', 'gs://pipeline-github/accuknox-report.json']
     waitFor: ['accuknox-container-scan']
 
-  # Step 5: Print the Trivy results
+  # Step 5: Print the AccuKnox container scan results
   - name: 'ubuntu'
     entrypoint: 'cat'
     args: ['/workspace/accuknox-report.json']
