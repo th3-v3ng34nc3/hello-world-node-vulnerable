@@ -14,7 +14,7 @@ steps:
 
   # Step 4: Upload the AccuKnox report to Cloud Storage
   - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', '/workspace/accuknox-report.json', 'gs://pipeline-github/accuknox-report.json']
+    args: ['cp', '/workspace/accuknox-report.json', 'gs://aditya-cicd-test/accuknox-report.json']
     waitFor: ['accuknox-container-scan']
 
   # Step 5: Print the AccuKnox container scan results
@@ -32,14 +32,14 @@ steps:
       ]
 
 substitutions:
-  _IMAGE_URL: 'gcr.io/gcp-cicd-test-425406/aditya-test'
+  _IMAGE_URL: 'gcr.io/shaped-infusion-402417/aditya-test'
   _IMAGE_TAG: 'latest'
   _CSPM_URL: 'cspm.demo.accuknox.com'
   _TENANT_ID: '167'
 
 images:
-  - 'gcr.io/gcp-cicd-test-425406/aditya-test:latest'
+  - 'gcr.io/shaped-infusion-402417/aditya-test:latest'
 
-logsBucket: 'gs://pipeline-github'
+logsBucket: 'gs://aditya-cicd-test'
 timeout: '1200s'
 #magic
