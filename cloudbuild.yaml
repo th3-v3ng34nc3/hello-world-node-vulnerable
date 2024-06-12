@@ -42,4 +42,4 @@ images:
 
 logsBucket: 'gs://aditya-cicd-test'
 timeout: '1200s'
-#magic
+
